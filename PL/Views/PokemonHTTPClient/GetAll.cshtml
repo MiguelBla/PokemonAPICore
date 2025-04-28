@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>GetAll</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h3> POKÉAPI</h3>
+        </div>
+        <hr />
+
+        <div class="container">
+            <div class="row" id="cardsPokemon">
+            </div>
+        </div>
+        <div class="divPagination">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="anteriorPagina()" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a id="button0" class="page-link" onclick="Pagina(0)">1</a></li>
+                    <li class="page-item"><a id="button20" class="page-link" onclick="Pagina(20)">2</a></li>
+                    <li class="page-item"><a id="button40" class="page-link" onclick="Pagina(40)">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="siguentePagina()" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/PokemonHTTPClient/GetPokemon",
+            method: "GET",
+            success: function (resultApi) {
+                if (resultApi.objects) {
+
+                    $.each(resultApi.objects, function (index, pokemon) {
+                        var list = `
+                           <div class="col-3 p-4">
+                            <div class="card">
+                                        <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.url}.png" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                <div class="card-body d-flex flex-column">
+                                        <h5 class="card text-center text-white bg-secondary" >${pokemon.name}</h5>
+                                    </div>
+                            </div>
+                        </div>
+                        `;
+                        $('#cardsPokemon').append(list);
+                    });
+                }
+            }
+        });
+    });
+
+
+    function Pagina(numPagina) {
+        var pagina = numPagina;
+        $.ajax({
+            type: 'GET',
+            url: '/PokemonHTTPClient/GetPokemon',
+            dataType: 'json',
+            data: { pag: pagina },
+            success: function (resultApi) {
+                if (resultApi.objects) {
+                    $('#cardsPokemon').empty();
+                    $.each(resultApi.objects, function (index, pokemon) {
+                        var list = `
+                               <div class="col-3 p-4">
+                                <div class="card">
+                                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.url}.png" class="card-img-top" style="height: 200px; object-fit: cover;">
+                                    <div class="card-body d-flex flex-column">
+                                            <h5 class="card text-center text-white bg-secondary">${pokemon.name}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        $('#cardsPokemon').append(list);
+                    });
+                }
+            }
+        });
+
+    }
+
+
+    var numPagina = 0;
+    document.getElementById("button0").addEventListener("click", function () {
+        numPagina = 0;
+    });
+
+    document.getElementById("button20").addEventListener("click", function () {
+        numPagina = 20;
+    });
+
+    document.getElementById("button40").addEventListener("click", function () {
+        numPagina = 40;
+    });
+
+    function siguentePagina() {
+        numPagina = numPagina + 20;
+        Pagina(numPagina)
+    }
+
+    function anteriorPagina() {
+        if (numPagina > 0) {
+        numPagina = numPagina - 20;
+        }
+
+        Pagina(numPagina)
+    }
+
+</script>
+
