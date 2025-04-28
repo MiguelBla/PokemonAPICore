@@ -9,6 +9,7 @@ namespace PL.Controllers
 			return View();
 		}
 
+		//consumo httpclient
 		public JsonResult GetPokemon(int? pag)
 		{
 			if (pag == null)
